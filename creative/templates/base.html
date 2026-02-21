@@ -188,6 +188,12 @@
             <li class="nav-item">
               <a class="nav-link" href="/admin_view_users/">Users</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin_view_payments/">Payments</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin_view_feedbacks/">Feedbacks</a>
+            </li>
             {% elif user.user_type == 'seller' %}
             <li class="nav-item">
               <a class="nav-link" href="/seller_home/">Home</a>
@@ -198,6 +204,9 @@
             <li class="nav-item">
               <a class="nav-link" href="/seller_view_bookings/">Bookings</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/seller_view_feedbacks/">Feedbacks</a>
+            </li>
             {% elif user.user_type == 'user' %}
             <li class="nav-item">
               <a class="nav-link" href="/user_home/">Home</a>
@@ -207,6 +216,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/my_orders/">My Orders</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user_feedback/">Feedback</a>
             </li>
             {% endif %}
             <li class="nav-item">
