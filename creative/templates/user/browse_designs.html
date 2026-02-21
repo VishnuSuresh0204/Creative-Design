@@ -23,6 +23,8 @@
             <div class="glass-card overflow-hidden h-100 d-flex flex-column">
                 {% if design.image %}
                 <img src="{{ design.image.url }}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=800" class="card-img-top" style="height: 250px; object-fit: cover;">
                 {% endif %}
                 <div class="p-4 flex-grow-1">
                     <div class="d-flex justify-content-between mb-2">
