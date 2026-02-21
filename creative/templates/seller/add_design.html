@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Design - Seller{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5 animate-fade">
+    <div class="col-md-6">
+        <div class="glass-card p-5">
+            <h2 class="mb-4">Upload New Design</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label text-muted">Title</label>
+                    <input type="text" name="title" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required placeholder="Design Name">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Description</label>
+                    <textarea name="description" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" rows="4" required placeholder="Describe your design..."></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Price ($)</label>
+                    <input type="number" step="0.01" name="price" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required placeholder="0.00">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Design Image</label>
+                    <input type="file" name="image" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary w-100 py-3">Publish Design</button>
+                    <a href="/manage_design/" class="btn btn-outline w-100 py-3 text-center">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

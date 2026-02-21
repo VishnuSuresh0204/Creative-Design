@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Design - Seller{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5 animate-fade">
+    <div class="col-md-6">
+        <div class="glass-card p-5">
+            <h2 class="mb-4">Edit Design</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4 text-center">
+                    {% if design.image %}
+                    <img src="{{ design.image.url }}" class="rounded-4 mb-3" style="max-height: 150px; width: auto;">
+                    {% endif %}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Title</label>
+                    <input type="text" name="title" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" value="{{ design.title }}" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Description</label>
+                    <textarea name="description" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" rows="4" required>{{ design.description }}</textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Price ($)</label>
+                    <input type="number" step="0.01" name="price" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" value="{{ design.price }}" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Update Design Image (Optional)</label>
+                    <input type="file" name="image" class="form-control bg-transparent border-secondary text-white p-3 rounded-4">
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary w-100 py-3">Update Design</button>
+                    <a href="/manage_design/" class="btn btn-outline w-100 py-3 text-center">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

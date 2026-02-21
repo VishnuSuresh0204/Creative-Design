@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage My Designs - Seller{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2>My Design Gallery</h2>
+        <a href="/add_design/" class="btn btn-primary"><i class="fas fa-plus me-2"></i>New Upload</a>
+    </div>
+
+    <div class="row g-4">
+        {% for design in designs %}
+        <div class="col-md-4">
+            <div class="glass-card overflow-hidden h-100">
+                {% if design.image %}
+                <img src="{{ design.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="p-4">
+                    <h4 class="mb-2">{{ design.title }}</h4>
+                    <p class="text-muted small mb-3">{{ design.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-bold text-info">${{ design.price }}</span>
+                        <div class="d-flex gap-2">
+                            <a href="/edit_design/?id={{ design.id }}" class="btn btn-sm btn-outline py-2"><i class="fas fa-edit"></i></a>
+                            <a href="/delete_design/?id={{ design.id }}" class="btn btn-sm btn-outline py-2 text-danger" onclick="return confirm('Delete this design?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="glass-card p-5">
+                <i class="fas fa-palette fs-1 mb-3 text-muted"></i>
+                <p class="mb-4">You haven't uploaded any designs yet.</p>
+                <a href="/add_design/" class="btn btn-primary">Start Designing</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
