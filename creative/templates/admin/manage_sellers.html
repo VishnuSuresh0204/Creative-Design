@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Sellers - Admin{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Seller Profiles</h2>
+        <a href="/admin_home/" class="btn btn-outline"><i class="fas fa-arrow-left me-2"></i>Back</a>
+    </div>
+
+    <div class="glass-card p-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Logo</th>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Place</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for seller in sellers %}
+                    <tr class="align-middle">
+                        <td>
+                            {% if seller.image %}
+                            <img src="{{ seller.image.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-store text-white-50"></i>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ seller.name }}</td>
+                        <td>{{ seller.email }}<br><small class="text-muted">{{ seller.contact_number }}</small></td>
+                        <td>{{ seller.place }}</td>
+                        <td>
+                            {% if seller.status == 'approve' %}
+                            <span class="badge bg-success bg-opacity-10 text-success p-2">Approved</span>
+                            {% elif seller.status == 'reject' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger p-2">Rejected</span>
+                            {% elif seller.status == 'block' %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning p-2">Blocked</span>
+                            {% else %}
+                            <span class="badge bg-info bg-opacity-10 text-info p-2">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-white text-decoration-none dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Options
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark glass-card border-0 p-2">
+                                    {% if seller.status != 'approve' %}
+                                    <li><a class="dropdown-item rounded-3" href="/manage_sellers/?action=approve&id={{ seller.id }}">Approve</a></li>
+                                    {% endif %}
+                                    {% if seller.status != 'reject' %}
+                                    <li><a class="dropdown-item rounded-3 text-danger" href="/manage_sellers/?action=reject&id={{ seller.id }}">Reject</a></li>
+                                    {% endif %}
+                                    {% if seller.status != 'block' %}
+                                    <li><a class="dropdown-item rounded-3 text-warning" href="/manage_sellers/?action=block&id={{ seller.id }}">Block</a></li>
+                                    {% else %}
+                                    <li><a class="dropdown-item rounded-3 text-success" href="/manage_sellers/?action=unblock&id={{ seller.id }}">Unblock</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No sellers found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

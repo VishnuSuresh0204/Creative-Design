@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard - Creative Design{% endblock %}
+
+{% block content %}
+<div class="row g-4 animate-fade">
+    <div class="col-md-12">
+        <h2 class="mb-4">Customer Dashboard</h2>
+    </div>
+    <div class="col-md-6">
+        <div class="glass-card p-5 text-center">
+            <i class="fas fa-search fs-1 mb-3 text-info"></i>
+            <h3>Browse Designs</h3>
+            <p class="text-muted mb-4">Explore thousands of creative designs from top designers</p>
+            <a href="/browse_designs/" class="btn btn-primary px-5">Start Shopping</a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="glass-card p-5 text-center">
+            <i class="fas fa-list-ul fs-1 mb-3 text-info"></i>
+            <h3>My Orders</h3>
+            <p class="text-muted mb-4">Track your orders and customization status</p>
+            <a href="/my_orders/" class="btn btn-primary px-5">View My Orders</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

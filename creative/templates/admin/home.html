@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Creative Design{% endblock %}
+
+{% block content %}
+<div class="row g-4 animate-fade">
+    <div class="col-md-12">
+        <h2 class="mb-4">Admin Dashboard</h2>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 text-center">
+            <i class="fas fa-store fs-1 mb-3 text-info"></i>
+            <h3>Sellers</h3>
+            <p class="text-muted">Approve, reject, or manage designer profiles</p>
+            <a href="/manage_sellers/" class="btn btn-primary w-100">Manage Sellers</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 text-center">
+            <i class="fas fa-users fs-1 mb-3 text-info"></i>
+            <h3>Customers</h3>
+            <p class="text-muted">View and manage registered user accounts</p>
+            <a href="/admin_view_users/" class="btn btn-primary w-100">View Users</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 text-center">
+            <i class="fas fa-credit-card fs-1 mb-3 text-info"></i>
+            <h3>Payments</h3>
+            <p class="text-muted">Track transaction history and revenue</p>
+            <a href="/admin_view_payments/" class="btn btn-primary w-100">View Payments</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

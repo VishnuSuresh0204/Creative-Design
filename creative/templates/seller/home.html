@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Seller Home - Creative Design{% endblock %}
+
+{% block content %}
+<div class="row g-4 animate-fade">
+    <div class="col-md-12">
+        <h2 class="mb-4">Seller Dashboard</h2>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 text-center">
+            <i class="fas fa-plus-circle fs-1 mb-3 text-primary"></i>
+            <h3>Add Design</h3>
+            <p class="text-muted">Upload your new creative works</p>
+            <a href="/add_design/" class="btn btn-primary w-100">Upload Design</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 text-center">
+            <i class="fas fa-palette fs-1 mb-3 text-primary"></i>
+            <h3>Manage Designs</h3>
+            <p class="text-muted">View, edit, or remove your uploads</p>
+            <a href="/manage_design/" class="btn btn-primary w-100">My Gallery</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 text-center">
+            <i class="fas fa-shopping-bag fs-1 mb-3 text-primary"></i>
+            <h3>Bookings</h3>
+            <p class="text-muted">Manage orders and customizations</p>
+            <a href="/seller_view_bookings/" class="btn btn-primary w-100">View Orders</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
