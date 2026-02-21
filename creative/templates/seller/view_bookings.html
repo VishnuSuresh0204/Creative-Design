@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Bookings - Seller{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Customer Bookings</h2>
+        <a href="/seller_home/" class="btn btn-outline"><i class="fas fa-arrow-left me-2"></i>Back</a>
+    </div>
+
+    <div class="glass-card p-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Design</th>
+                        <th>Customer</th>
+                        <th>Customization</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr class="align-middle">
+                        <td>{{ booking.date|date:"M d, Y" }}</td>
+                        <td>{{ booking.design.title }}</td>
+                        <td>{{ booking.user.name }}<br><small class="text-muted">{{ booking.user.phone }}</small></td>
+                        <td>
+                            <button class="btn btn-sm btn-link text-info text-decoration-none" data-bs-toggle="modal" data-bs-target="#customModal{{ booking.id }}">
+                                Details
+                            </button>
+                            
+                            <!-- Modal -->
+                            <div class="modal fade" id="customModal{{ booking.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content glass-card border-0">
+                                        <div class="modal-header border-0">
+                                            <h5 class="modal-title">Customization Requests</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <div class="mb-3">
+                                                <label class="text-muted small d-block">Text Request</label>
+                                                <p class="fs-5">{{ booking.custom_text|default:"None" }}</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="text-muted small d-block">Highlight Color</label>
+                                                <div class="rounded-3" style="width: 40px; height: 40px; background-color: {{ booking.custom_color|default:'#00d2ff' }};"></div>
+                                            </div>
+                                            {% if booking.custom_image %}
+                                            <div class="mb-3">
+                                                <label class="text-muted small d-block">Attached Reference</label>
+                                                <img src="{{ booking.custom_image.url }}" class="img-fluid rounded-3 mt-2" style="max-height: 200px;">
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-{{ booking.payment_status|yesno:'success,warning' }}">
+                                {{ booking.payment_status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-info p-2">{{ booking.status|title }}</span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline dropdown-toggle" type="button" data-bs-toggle="dropdown">Process</button>
+                                <ul class="dropdown-menu dropdown-menu-dark glass-card border-0">
+                                    <li><a class="dropdown-item" href="/manage_booking_status/?id={{ booking.id }}&action=approve">Approve</a></li>
+                                    <li><a class="dropdown-item" href="/manage_booking_status/?id={{ booking.id }}&action=ship">Set as Shipped</a></li>
+                                    <li><a class="dropdown-item" href="/manage_booking_status/?id={{ booking.id }}&action=deliver">Set as Delivered</a></li>
+                                    <li><hr class="dropdown-divider border-secondary opacity-50"></li>
+                                    <li><a class="dropdown-item text-danger" href="/manage_booking_status/?id={{ booking.id }}&action=reject">Reject</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">No bookings received yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
