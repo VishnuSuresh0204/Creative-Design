@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - Creative Design{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5 animate-fade">
+    <div class="col-md-5">
+        <div class="glass-card p-5">
+            <h2 class="text-center mb-4">Complete Payment</h2>
+            
+            <div class="mb-4 p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-10">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Item</span>
+                    <span>{{ booking.design.title }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Designer</span>
+                    <span>{{ booking.design.seller.name }}</span>
+                </div>
+                <div class="d-flex justify-content-between fw-bold pt-2 border-top border-white border-opacity-10 mt-2">
+                    <span>Total Amount</span>
+                    <span class="text-info">${{ booking.design.price }}</span>
+                </div>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label text-muted">Card Holder Name</label>
+                    <input type="text" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Card Number</label>
+                    <input type="text" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" placeholder="XXXX XXXX XXXX XXXX" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-muted">Expiry Date</label>
+                        <input type="text" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" placeholder="MM/YY" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-muted">CVV</label>
+                        <input type="password" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" placeholder="***" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-3 mt-2">Pay & Place Order</button>
+            </form>
+
+            <p class="text-center mt-4 text-muted small">
+                <i class="fas fa-lock me-1"></i> Secure 256-bit SSL encrypted payment
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

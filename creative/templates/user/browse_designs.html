@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Designs - Creative Design{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-6">
+            <h2>Explore Creative Works</h2>
+            <p class="text-muted">Find the perfect design for your next project</p>
+        </div>
+        <div class="col-md-6">
+            <form class="d-flex gap-2" method="GET">
+                <input type="text" name="search" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" placeholder="Search by title or designer..." value="{{ request.GET.search }}">
+                <button class="btn btn-primary px-4"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for design in designs %}
+        <div class="col-md-4">
+            <div class="glass-card overflow-hidden h-100 d-flex flex-column">
+                {% if design.image %}
+                <img src="{{ design.image.url }}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                {% endif %}
+                <div class="p-4 flex-grow-1">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-info fw-semibold">{{ design.seller.name }}</small>
+                        <span class="fw-bold">${{ design.price }}</span>
+                    </div>
+                    <h4 class="mb-3">{{ design.title }}</h4>
+                    <p class="text-muted small mb-4">{{ design.description|truncatewords:20 }}</p>
+                    <a href="/design_details/?id={{ design.id }}" class="btn btn-outline w-100 py-2">View & Customize</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="glass-card p-5">
+                <i class="fas fa-search fs-1 mb-3 text-muted"></i>
+                <p>No designs found matching your search.</p>
+                <a href="/browse_designs/" class="btn btn-primary mt-3">Browse All</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

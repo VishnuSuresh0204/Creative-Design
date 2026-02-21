@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - Creative Design{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Orders</h2>
+        <a href="/browse_designs/" class="btn btn-outline"><i class="fas fa-shopping-cart me-2"></i>Browse More</a>
+    </div>
+
+    <div class="glass-card p-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Design</th>
+                        <th>Designer</th>
+                        <th>Created On</th>
+                        <th>Status</th>
+                        <th>Customization</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr class="align-middle">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if booking.design.image %}
+                                <img src="{{ booking.design.image.url }}" class="rounded-3 me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                {% endif %}
+                                <span>{{ booking.design.title }}</span>
+                            </div>
+                        </td>
+                        <td>{{ booking.design.seller.name }}</td>
+                        <td>{{ booking.date|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="badge bg-{{ booking.status|yesno:'success,info' }} bg-opacity-10 text-{{ booking.status|yesno:'success,info' }} p-2">
+                                {{ booking.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-link text-info text-decoration-none" data-bs-toggle="modal" data-bs-target="#customModal{{ booking.id }}">
+                                View Details
+                            </button>
+                            
+                            <!-- Modal -->
+                            <div class="modal fade" id="customModal{{ booking.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content glass-card border-0">
+                                        <div class="modal-header border-0">
+                                            <h5 class="modal-title">Customization Details</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <div class="mb-3">
+                                                <label class="text-muted small d-block">Custom Text</label>
+                                                <p class="fs-5">{{ booking.custom_text|default:"N/A" }}</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="text-muted small d-block">Theme Color</label>
+                                                <div class="rounded-3" style="width: 40px; height: 40px; background-color: {{ booking.custom_color|default:'#00d2ff' }};"></div>
+                                            </div>
+                                            {% if booking.custom_image %}
+                                            <div class="mb-3">
+                                                <label class="text-muted small d-block">Custom Logo/Image</label>
+                                                <img src="{{ booking.custom_image.url }}" class="img-fluid rounded-3 mt-2" style="max-height: 200px;">
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if booking.payment_status == 'paid' %}
+                            <span class="text-success"><i class="fas fa-check-circle me-1"></i>Paid</span>
+                            {% else %}
+                            <a href="/user_make_payment/?id={{ booking.id }}" class="btn btn-sm btn-primary">Pay Now</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            You haven't placed any orders yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

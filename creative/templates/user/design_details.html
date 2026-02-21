@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ design.title }} - Creative Design{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="row g-5">
+        <div class="col-lg-7">
+            <div class="glass-card p-3 mb-4">
+                {% if design.image %}
+                <img src="{{ design.image.url }}" class="img-fluid rounded-4 w-100" id="previewImage">
+                {% endif %}
+            </div>
+            <div class="glass-card p-4">
+                <h2 class="mb-3">{{ design.title }}</h2>
+                <p class="text-muted lead mb-4">{{ design.description }}</p>
+                <div class="d-flex align-items-center mb-4">
+                    <div class="me-3">
+                        {% if design.seller.image %}
+                        <img src="{{ design.seller.image.url }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h5 class="mb-0">{{ design.seller.name }}</h5>
+                        <small class="text-muted">Professional Artist</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="glass-card p-4 sticky-top" style="top: 100px;">
+                <h3 class="mb-4">Customize & Order</h3>
+                <div class="mb-4 d-flex justify-content-between">
+                    <span class="text-muted">Base Price</span>
+                    <span class="fs-4 fw-bold text-info">${{ design.price }}</span>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label text-muted">Custom Text</label>
+                        <input type="text" name="text" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" placeholder="Add your text here...">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted">Custom Image/Logo (Optional)</label>
+                        <input type="file" name="image" class="form-control bg-transparent border-secondary text-white p-3 rounded-4">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted">Preferred Theme Color</label>
+                        <div class="d-flex gap-3 align-items-center">
+                            <input type="color" name="color" class="form-control form-control-color border-0 bg-transparent" value="#00d2ff" style="width: 60px; height: 60px;">
+                            <span class="text-muted small">Select a color highlight</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 fs-5 mb-3">Place Order</button>
+                    <p class="text-center text-muted small"><i class="fas fa-lock me-2"></i>Secure checkout & Instant confirmation</p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
