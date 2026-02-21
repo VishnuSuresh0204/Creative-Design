@@ -16,7 +16,42 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from myapp import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin_django/', admin.site.urls),
+    
+    # Auth
+    path('', views.index, name='index'),
+    path('login/', views.login_view, name='login'),
+    path('user_reg/', views.user_reg, name='user_reg'),
+    path('seller_reg/', views.seller_reg, name='seller_reg'),
+    path('logout/', views.logout_view, name='logout'),
+    
+    # Admin
+    path('admin_home/', views.admin_home, name='admin_home'),
+    path('manage_sellers/', views.manage_sellers, name='manage_sellers'),
+    path('admin_view_users/', views.admin_view_users, name='admin_view_users'),
+    path('admin_view_payments/', views.admin_view_payments, name='admin_view_payments'),
+    
+    # Seller
+    path('seller_home/', views.seller_home, name='seller_home'),
+    path('add_design/', views.add_design, name='add_design'),
+    path('manage_design/', views.manage_design, name='manage_design'),
+    path('edit_design/', views.edit_design, name='edit_design'),
+    path('delete_design/', views.delete_design, name='delete_design'),
+    path('seller_view_bookings/', views.seller_view_bookings, name='seller_view_bookings'),
+    path('manage_booking_status/', views.manage_booking_status, name='manage_booking_status'),
+    
+    # User
+    path('user_home/', views.user_home, name='user_home'),
+    path('browse_designs/', views.browse_designs, name='browse_designs'),
+    path('design_details/', views.design_details, name='design_details'),
+    path('my_orders/', views.my_orders, name='my_orders'),
+    path('user_make_payment/', views.user_make_payment, name='user_make_payment'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
