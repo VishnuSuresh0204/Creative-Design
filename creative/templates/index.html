@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Creative Design{% endblock %}
+
+{% block content %}
+<div class="row align-items-center justify-content-center py-5">
+    <div class="col-lg-6 mb-5 mb-lg-0 text-center text-lg-start animate-fade">
+        <h1 class="display-3 fw-bold mb-4">Unleash Your <span style="color: var(--primary-accent)">Creativity</span></h1>
+        <p class="lead mb-5 text-muted">A premium marketplace for unique creative designs. Customize, order, and bring your ideas to life with our expert sellers.</p>
+        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+            <a href="/user_reg/" class="btn btn-primary px-5 py-3">Join as Customer</a>
+            <a href="/seller_reg/" class="btn btn-outline px-5 py-3">Become a Seller</a>
+        </div>
+    </div>
+    <div class="col-lg-5 animate-fade" style="animation-delay: 0.2s;">
+        <div class="glass-card p-4">
+            <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800" alt="Creative Content" class="img-fluid rounded-4 shadow-lg">
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 pt-5 text-center g-4 animate-fade" style="animation-delay: 0.4s;">
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="fas fa-magic fs-1 mb-3" style="color: var(--primary-accent)"></i>
+            <h3>Customization</h3>
+            <p class="text-muted">Personalize designs with your own text, images, and brand colors.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="fas fa-shield-alt fs-1 mb-3" style="color: var(--primary-accent)"></i>
+            <h3>Secure Payments</h3>
+            <p class="text-muted">Integrated secure payment gateway for safe and easy transactions.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="fas fa-comments fs-1 mb-3" style="color: var(--primary-accent)"></i>
+            <h3>Real-time Chat</h3>
+            <p class="text-muted">Communicate directly with sellers to perfect your customizations.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

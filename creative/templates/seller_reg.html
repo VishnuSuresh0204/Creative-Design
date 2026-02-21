@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Seller Registration - Creative Design{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-7 animate-fade">
+        <div class="glass-card p-5">
+            <h2 class="text-center mb-4">Join as a Designer / Seller</h2>
+            <p class="text-center text-muted mb-4">Showcase your creativity to thousands of customers</p>
+            
+            {% if msg %}
+            <div class="alert alert-danger bg-danger bg-opacity-10 border-danger text-danger border-0 rounded-4">
+                {{ msg }}
+            </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-muted">Business/Artist Name</label>
+                        <input type="text" name="name" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-muted">Place</label>
+                        <input type="text" name="place" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-muted">Contact Number</label>
+                        <input type="text" name="contact" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-muted">Email Address</label>
+                        <input type="email" name="email" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Profile/Business Logo</label>
+                    <input type="file" name="image" class="form-control bg-transparent border-secondary text-white p-3 rounded-4">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Username</label>
+                    <input type="text" name="username" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Password</label>
+                    <input type="password" name="password" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-3 mt-2">Register Now</button>
+            </form>
+            
+            <p class="text-center mt-4 text-muted">
+                Already have a seller account? <a href="/login/" class="text-info text-decoration-none">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
