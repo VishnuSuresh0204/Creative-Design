@@ -51,6 +51,12 @@ urlpatterns = [
     path('design_details/', views.design_details, name='design_details'),
     path('my_orders/', views.my_orders, name='my_orders'),
     path('user_make_payment/', views.user_make_payment, name='user_make_payment'),
+    
+    # Feedback & Chat
+    path('user_feedback/', views.user_feedback, name='user_feedback'),
+    path('seller_view_feedbacks/', views.seller_view_feedbacks, name='seller_view_feedbacks'),
+    path('admin_view_feedbacks/', views.admin_view_feedbacks, name='admin_view_feedbacks'),
+    path('chat/', views.chat_view, name='chat'),
 ]
 
 if settings.DEBUG:

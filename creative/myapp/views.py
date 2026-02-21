@@ -270,3 +270,53 @@ def user_make_payment(request):
             return redirect('/my_orders/')
         return render(request, 'user/payment.html', {'booking': booking})
     return redirect('/login/')
+
+# --- FEEDBACK & CHAT ---
+
+def user_feedback(request):
+    if 'uid' in request.session:
+        id = request.GET.get('id') # design id or seller id
+        if request.method == 'POST':
+            message = request.POST.get('message')
+            rating = request.POST.get('rating')
+            user = User.objects.get(id=request.session['uid'])
+            
+            if id:
+                 design = Design.objects.get(id=id)
+                 Feedback.objects.create(user=user, seller=design.seller, design=design, message=message, rating=rating)
+            else:
+                 Feedback.objects.create(user=user, message=message, rating=rating)
+            return redirect('/user_home/')
+        return render(request, 'user/send_feedback.html')
+    return redirect('/login/')
+
+def seller_view_feedbacks(request):
+    if 'sid' in request.session:
+        seller = Seller.objects.get(id=request.session['sid'])
+        feedbacks = Feedback.objects.filter(seller=seller).order_by('-date')
+        return render(request, 'view_feedbacks.html', {'feedbacks': feedbacks})
+    return redirect('/login/')
+
+def admin_view_feedbacks(request):
+    if request.user.is_authenticated and request.user.user_type == 'admin':
+        feedbacks = Feedback.objects.all().order_by('-date')
+        return render(request, 'view_feedbacks.html', {'feedbacks': feedbacks})
+    return redirect('/login/')
+
+def chat_view(request):
+    if request.user.is_authenticated:
+        receiver_id = request.GET.get('id')
+        receiver = Login.objects.get(id=receiver_id)
+        
+        if request.method == 'POST':
+            msg = request.POST.get('message')
+            Chat.objects.create(sender=request.user, receiver=receiver, message=msg)
+            return redirect(f'/chat/?id={receiver_id}')
+            
+        chats = Chat.objects.filter(
+            (Q(sender=request.user) & Q(receiver=receiver)) |
+            (Q(sender=receiver) & Q(receiver=request.user))
+        ).order_by('date')
+        
+        return render(request, 'chat.html', {'chats': chats, 'receiver': receiver})
+    return redirect('/login/')

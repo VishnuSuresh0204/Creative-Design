@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Share Feedback - Creative Design{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5 animate-fade">
+    <div class="col-md-6">
+        <div class="glass-card p-5">
+            <h2 class="text-center mb-4">Your Feedback Matters</h2>
+            <p class="text-center text-muted mb-4">Tell us about your experience</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-4 text-center">
+                    <label class="form-label text-muted d-block mb-3">Rating</label>
+                    <div class="d-flex justify-content-center gap-3">
+                        {% for i in "12345" %}
+                        <div class="form-check form-check-inline m-0">
+                            <input class="btn-check" type="radio" name="rating" id="r{{i}}" value="{{i}}" {% if i == "5" %}checked{% endif %}>
+                            <label class="btn btn-outline-info rounded-circle d-flex align-items-center justify-content-center" for="r{{i}}" style="width: 45px; height: 45px;">
+                                {{i}}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Your Comments</label>
+                    <textarea name="message" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" rows="5" required placeholder="Write your feedback here..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-3">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

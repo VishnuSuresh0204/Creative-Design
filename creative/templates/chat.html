@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat with {{ receiver.username }} - Creative Design{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        height: 500px;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .message {
+        max-width: 75%;
+        padding: 12px 18px;
+        border-radius: 20px;
+        position: relative;
+        font-size: 0.95rem;
+    }
+    .sent {
+        align-self: flex-end;
+        background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+        color: white;
+        border-bottom-right-radius: 5px;
+    }
+    .received {
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border-bottom-left-radius: 5px;
+    }
+    .chat-input-area {
+        border-top: 1px solid var(--glass-border);
+        padding: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-fade">
+    <div class="col-md-8">
+        <div class="glass-card overflow-hidden">
+            <div class="p-4 border-bottom border-white border-opacity-10 d-flex align-items-center">
+                <i class="fas fa-circle text-success me-2 small"></i>
+                <h5 class="mb-0">Chatting with {{ receiver.username }}</h5>
+                <small class="ms-auto text-muted">{{ receiver.user_type|title }}</small>
+            </div>
+            
+            <div class="chat-container mb-0" id="chatBox">
+                {% for chat in chats %}
+                <div class="message {% if chat.sender == user %}sent{% else %}received{% endif %}">
+                    <div>{{ chat.message }}</div>
+                    <small class="d-block mt-1 opacity-50" style="font-size: 0.7rem;">{{ chat.date|date:"H:i" }}</small>
+                </div>
+                {% empty %}
+                <div class="text-center py-5 text-muted">
+                    <i class="far fa-comments fs-1 mb-3"></i>
+                    <p>No messages yet. Say hello!</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="chat-input-area">
+                <form method="POST" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="text" name="message" class="form-control bg-transparent border-secondary text-white p-3 rounded-pill" placeholder="Type your message..." required autocomplete="off">
+                    <button type="submit" class="btn btn-primary rounded-circle" style="width: 55px; height: 55px;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatBox = document.getElementById('chatBox');
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}
