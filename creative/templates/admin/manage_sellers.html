@@ -5,73 +5,168 @@
 {% block content %}
 <div class="animate-fade">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Seller Profiles</h2>
-        <a href="/admin_home/" class="btn btn-outline"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        <div>
+            <h2 class="mb-1">Seller Management</h2>
+            <p class="text-muted small mb-0">Review and manage designer profiles and applications</p>
+        </div>
+        <a href="/admin_home/" class="btn btn-outline"><i class="fas fa-arrow-left me-2"></i>Dashboard</a>
     </div>
 
-    <div class="glass-card p-4 overflow-hidden">
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="glass-card p-4 d-flex align-items-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                    <i class="fas fa-store text-primary fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0">{{ total_count }}</h3>
+                    <p class="text-muted mb-0 small">Total Sellers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-4 d-flex align-items-center border-info border-opacity-25">
+                <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                    <i class="fas fa-clock text-info fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 text-info">{{ pending_count }}</h3>
+                    <p class="text-muted mb-0 small">Pending Approval</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-4 d-flex align-items-center border-success border-opacity-25">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                    <i class="fas fa-check-circle text-success fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 text-success">{{ approved_count }}</h3>
+                    <p class="text-muted mb-0 small">Approved Partners</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="glass-card p-4 mb-4">
+        <form method="get" class="row g-3">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 border-secondary"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control bg-transparent border-start-0 border-secondary text-white" placeholder="Search by name, email, or place..." value="{{ search|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select bg-transparent border-secondary text-white dropdown-menu-dark">
+                    <option value="" class="bg-dark">All Statuses</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %} class="bg-dark">Pending</option>
+                    <option value="approve" {% if status_filter == 'approve' %}selected{% endif %} class="bg-dark">Approved</option>
+                    <option value="reject" {% if status_filter == 'reject' %}selected{% endif %} class="bg-dark">Rejected</option>
+                    <option value="block" {% if status_filter == 'block' %}selected{% endif %} class="bg-dark">Blocked</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+            <div class="col-md-2">
+                <a href="/manage_sellers/" class="btn btn-outline w-100">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="glass-card p-0 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-dark table-hover mb-0">
-                <thead>
+                <thead class="bg-white bg-opacity-5">
                     <tr>
-                        <th>Logo</th>
-                        <th>Name</th>
-                        <th>Contact</th>
-                        <th>Place</th>
+                        <th class="ps-4">Designer</th>
+                        <th>Contact Info</th>
+                        <th>Location</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th class="text-end pe-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for seller in sellers %}
                     <tr class="align-middle">
-                        <td>
-                            {% if seller.image %}
-                            <img src="{{ seller.image.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
-                            {% else %}
-                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="fas fa-store text-white-50"></i>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if seller.image %}
+                                <img src="{{ seller.image.url }}" class="rounded-3 me-3" style="width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--glass-border);">
+                                {% else %}
+                                <div class="rounded-3 bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; border: 1px solid var(--glass-border);">
+                                    <i class="fas fa-user-tie text-white-50"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-semibold">{{ seller.name }}</div>
+                                    <div class="text-muted small">ID: #{{ seller.id }}</div>
+                                </div>
                             </div>
-                            {% endif %}
                         </td>
-                        <td>{{ seller.name }}</td>
-                        <td>{{ seller.email }}<br><small class="text-muted">{{ seller.contact_number }}</small></td>
-                        <td>{{ seller.place }}</td>
+                        <td>
+                            <div class="small"><i class="fas fa-envelope me-2 text-muted"></i>{{ seller.email }}</div>
+                            <div class="small"><i class="fas fa-phone me-2 text-muted"></i>{{ seller.contact_number }}</div>
+                        </td>
+                        <td>
+                            <span class="small"><i class="fas fa-location-dot me-2 text-muted"></i>{{ seller.place }}</span>
+                        </td>
                         <td>
                             {% if seller.status == 'approve' %}
-                            <span class="badge bg-success bg-opacity-10 text-success p-2">Approved</span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2">
+                                <i class="fas fa-check-circle me-1"></i>Approved
+                            </span>
                             {% elif seller.status == 'reject' %}
-                            <span class="badge bg-danger bg-opacity-10 text-danger p-2">Rejected</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2">
+                                <i class="fas fa-times-circle me-1"></i>Rejected
+                            </span>
                             {% elif seller.status == 'block' %}
-                            <span class="badge bg-warning bg-opacity-10 text-warning p-2">Blocked</span>
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2">
+                                <i class="fas fa-ban me-1"></i>Blocked
+                            </span>
                             {% else %}
-                            <span class="badge bg-info bg-opacity-10 text-info p-2">Pending</span>
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2">
+                                <i class="fas fa-spinner fa-spin me-1"></i>Pending
+                            </span>
                             {% endif %}
                         </td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-link text-white text-decoration-none dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    Options
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-dark glass-card border-0 p-2">
-                                    {% if seller.status != 'approve' %}
-                                    <li><a class="dropdown-item rounded-3" href="/manage_sellers/?action=approve&id={{ seller.id }}">Approve</a></li>
-                                    {% endif %}
-                                    {% if seller.status != 'reject' %}
-                                    <li><a class="dropdown-item rounded-3 text-danger" href="/manage_sellers/?action=reject&id={{ seller.id }}">Reject</a></li>
-                                    {% endif %}
-                                    {% if seller.status != 'block' %}
-                                    <li><a class="dropdown-item rounded-3 text-warning" href="/manage_sellers/?action=block&id={{ seller.id }}">Block</a></li>
-                                    {% else %}
-                                    <li><a class="dropdown-item rounded-3 text-success" href="/manage_sellers/?action=unblock&id={{ seller.id }}">Unblock</a></li>
-                                    {% endif %}
-                                </ul>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                {% if seller.status != 'approve' %}
+                                <a href="/manage_sellers/?action=approve&id={{ seller.id }}" class="btn btn-sm btn-outline-success border-opacity-25 glass-card px-2 py-1" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="/manage_sellers/?action=reject&id={{ seller.id }}" class="btn btn-sm btn-outline-danger border-opacity-25 glass-card px-2 py-1" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                                
+                                {% if seller.status != 'block' %}
+                                <a href="/manage_sellers/?action=block&id={{ seller.id }}" class="btn btn-sm btn-outline-warning border-opacity-25 glass-card px-2 py-1" title="Block">
+                                    <i class="fas fa-ban"></i>
+                                </a>
+                                {% else %}
+                                <a href="/manage_sellers/?action=unblock&id={{ seller.id }}" class="btn btn-sm btn-outline-info border-opacity-25 glass-card px-2 py-1" title="Unblock">
+                                    <i class="fas fa-unlock"></i>
+                                </a>
+                                {% endif %}
+                                <div class="vr bg-white bg-opacity-25 mx-1"></div>
+                                <a href="/chat/?id={{ seller.login.id }}" class="btn btn-sm btn-outline-primary border-opacity-25 glass-card px-2 py-1" title="Message">
+                                    <i class="fas fa-comment"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No sellers found.</td>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="text-muted mb-3"><i class="fas fa-store-slash fs-1 opacity-25"></i></div>
+                            <h5 class="text-muted">No sellers matching your criteria</h5>
+                            <p class="text-muted small">Try adjusting your search or filters</p>
+                            <a href="/manage_sellers/" class="btn btn-sm btn-outline mt-2">Clear All Filters</a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
