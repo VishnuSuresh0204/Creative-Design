@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Designs - Admin{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Design Management</h2>
+            <p class="text-muted small mb-0">Review and approve product listings from sellers</p>
+        </div>
+        <a href="/admin_home/" class="btn btn-outline"><i class="fas fa-arrow-left me-2"></i>Dashboard</a>
+    </div>
+
+    <div class="glass-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead class="bg-white bg-opacity-5">
+                    <tr>
+                        <th class="ps-4">Product</th>
+                        <th>Seller</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for design in designs %}
+                    <tr class="align-middle">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if design.image %}
+                                <img src="{{ design.image.url }}" class="rounded-3 me-3" style="width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--glass-border);">
+                                {% else %}
+                                <div class="rounded-3 bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; border: 1px solid var(--glass-border);">
+                                    <i class="fas fa-image text-white-50"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-semibold">{{ design.title }}</div>
+                                    <div class="text-muted small">ID: #{{ design.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ design.seller.name }}</td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-25 text-white border border-white border-opacity-10 px-2 py-1 small">
+                                {{ design.product_type }}
+                            </span>
+                        </td>
+                        <td>₹{{ design.price }}</td>
+                        <td>
+                            {% if design.status == 'approve' %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2">
+                                <i class="fas fa-check-circle me-1"></i>Approved
+                            </span>
+                            {% elif design.status == 'reject' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2">
+                                <i class="fas fa-times-circle me-1"></i>Rejected
+                            </span>
+                            {% else %}
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2">
+                                <i class="fas fa-spinner fa-spin me-1"></i>Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                {% if design.status != 'approve' %}
+                                <a href="/admin_approve_design/?id={{ design.id }}" class="btn btn-sm btn-outline-success border-opacity-25 glass-card px-2 py-1" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% endif %}
+                                
+                                {% if design.status != 'reject' %}
+                                <a href="/admin_reject_design/?id={{ design.id }}" class="btn btn-sm btn-outline-danger border-opacity-25 glass-card px-2 py-1" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                                <a href="/chat/?id={{ design.seller.login.id }}" class="btn btn-sm btn-outline-primary border-opacity-25 glass-card px-2 py-1" title="Message Seller">
+                                    <i class="fas fa-comment"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted mb-3"><i class="fas fa-box-open fs-1 opacity-25"></i></div>
+                            <h5 class="text-muted">No designs found</h5>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

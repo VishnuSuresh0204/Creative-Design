@@ -19,6 +19,7 @@
                         <th>Design</th>
                         <th>Seller</th>
                         <th>Amount</th>
+                        <th>Admin Commission (10%)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,7 +29,8 @@
                         <td>{{ p.user.name }}</td>
                         <td>{{ p.booking.design.title }}</td>
                         <td>{{ p.booking.design.seller.name }}</td>
-                        <td class="fw-bold text-info">${{ p.amount }}</td>
+                        <td class="fw-bold text-info">₹{{ p.amount }}</td>
+                        <td class="text-warning">₹{{ p.admin_commission }}</td>
                     </tr>
                     {% empty %}
                     <tr>

@@ -23,7 +23,21 @@
                 <tbody>
                     {% for u in users %}
                     <tr class="align-middle">
-                        <td>{{ u.name }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if u.image %}
+                                <img src="{{ u.image.url }}" class="rounded-3 me-3" style="width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--glass-border);">
+                                {% else %}
+                                <div class="rounded-3 bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; border: 1px solid var(--glass-border);">
+                                    <i class="fas fa-user text-white-50"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-semibold">{{ u.name }}</div>
+                                    <div class="text-muted small">ID: #{{ u.id }}</div>
+                                </div>
+                            </div>
+                        </td>
                         <td>{{ u.email }}</td>
                         <td>{{ u.phone }}</td>
                         <td>{{ u.place }}</td>
