@@ -31,6 +31,7 @@ class User(models.Model):
     place = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
+    image = models.ImageField(upload_to='user_images/', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -41,6 +42,8 @@ class Design(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='design_images/', null=True, blank=True)
+    product_type = models.CharField(max_length=50, choices=(('Handmade', 'Handmade'), ('Machine Made', 'Machine Made')), default='Handmade')
+    status = models.CharField(max_length=20, default='pending') # pending, approve, reject
 
     def __str__(self):
         return self.title
@@ -64,6 +67,7 @@ class Payment(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    admin_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     date = models.DateField(auto_now_add=True)
 
 class Feedback(models.Model):
