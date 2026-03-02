@@ -18,8 +18,15 @@
                     <textarea name="description" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" rows="4" required placeholder="Describe your design..."></textarea>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label text-muted">Price ($)</label>
+                    <label class="form-label text-muted">Price (₹)</label>
                     <input type="number" step="0.01" name="price" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" required placeholder="0.00">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Product Type</label>
+                    <select name="type" class="form-select bg-transparent border-secondary text-white p-3 rounded-4 dropdown-menu-dark" required>
+                        <option value="Handmade" class="bg-dark">Handmade</option>
+                        <option value="Machine Made" class="bg-dark">Machine Made</option>
+                    </select>
                 </div>
                 <div class="mb-4">
                     <label class="form-label text-muted">Design Image</label>

@@ -18,6 +18,16 @@
                 {% endif %}
                 <div class="p-4">
                     <h4 class="mb-2">{{ design.title }}</h4>
+                    <div class="mb-2">
+                        {% if design.status == 'approve' %}
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 small">Approved</span>
+                        {% elif design.status == 'reject' %}
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 small">Rejected</span>
+                        {% else %}
+                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 small">Pending Approval</span>
+                        {% endif %}
+                        <span class="badge bg-secondary bg-opacity-25 text-white border border-white border-opacity-10 px-2 py-1 small">{{ design.product_type }}</span>
+                    </div>
                     <p class="text-muted small mb-3">{{ design.description|truncatewords:15 }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fs-5 fw-bold text-info">${{ design.price }}</span>
