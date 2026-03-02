@@ -35,6 +35,9 @@ urlpatterns = [
     path('manage_sellers/', views.manage_sellers, name='manage_sellers'),
     path('admin_view_users/', views.admin_view_users, name='admin_view_users'),
     path('admin_view_payments/', views.admin_view_payments, name='admin_view_payments'),
+    path('admin_view_designs/', views.admin_view_designs, name='admin_view_designs'),
+    path('admin_approve_design/', views.admin_approve_design, name='admin_approve_design'),
+    path('admin_reject_design/', views.admin_reject_design, name='admin_reject_design'),
     
     # Seller
     path('seller_home/', views.seller_home, name='seller_home'),

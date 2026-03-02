@@ -59,11 +59,12 @@ def user_reg(request):
         email = request.POST.get('email')
         u = request.POST.get('username')
         p = request.POST.get('password')
+        image = request.FILES.get('image')
         if Login.objects.filter(username=u).exists():
             msg = "Username already exists"
         else:
             user = Login.objects.create_user(username=u, password=p, user_type='user', view_password=p)
-            User.objects.create(login=user, name=name, place=place, phone=phone, email=email)
+            User.objects.create(login=user, name=name, place=place, phone=phone, email=email, image=image)
             return redirect('/login/')
     return render(request, 'user_reg.html', {'msg': msg})
 
@@ -116,8 +117,30 @@ def manage_sellers(request):
             except:
                 pass
         
+        search = request.GET.get('search')
+        status_filter = request.GET.get('status')
         sellers = Seller.objects.all()
-        return render(request, 'admin/manage_sellers.html', {'sellers': sellers})
+
+        if search:
+            sellers = sellers.filter(
+                Q(name__icontains=search) | 
+                Q(email__icontains=search) | 
+                Q(place__icontains=search) |
+                Q(contact_number__icontains=search)
+            )
+
+        if status_filter:
+            sellers = sellers.filter(status=status_filter)
+
+        context = {
+            'sellers': sellers,
+            'total_count': Seller.objects.count(),
+            'pending_count': Seller.objects.filter(status='pending').count(),
+            'approved_count': Seller.objects.filter(status='approve').count(),
+            'search': search,
+            'status_filter': status_filter
+        }
+        return render(request, 'admin/manage_sellers.html', context)
     return redirect('/login/')
 
 def admin_view_users(request):
@@ -130,6 +153,26 @@ def admin_view_payments(request):
     if request.user.is_authenticated and request.user.user_type == 'admin':
         payments = Payment.objects.all().order_by('-date')
         return render(request, 'admin/view_payments.html', {'payments': payments})
+    return redirect('/login/')
+
+def admin_view_designs(request):
+    if request.user.is_authenticated and request.user.user_type == 'admin':
+        designs = Design.objects.all().order_by('-id')
+        return render(request, 'admin/manage_designs.html', {'designs': designs})
+    return redirect('/login/')
+
+def admin_approve_design(request):
+    if request.user.is_authenticated and request.user.user_type == 'admin':
+        id = request.GET.get('id')
+        Design.objects.filter(id=id).update(status='approve')
+        return redirect('/admin_view_designs/')
+    return redirect('/login/')
+
+def admin_reject_design(request):
+    if request.user.is_authenticated and request.user.user_type == 'admin':
+        id = request.GET.get('id')
+        Design.objects.filter(id=id).update(status='reject')
+        return redirect('/admin_view_designs/')
     return redirect('/login/')
 
 # --- SELLER VIEWS ---
@@ -146,9 +189,10 @@ def add_design(request):
             title = request.POST.get('title')
             description = request.POST.get('description')
             price = request.POST.get('price')
+            product_type = request.POST.get('type')
             image = request.FILES.get('image')
             seller = Seller.objects.get(id=request.session['sid'])
-            Design.objects.create(seller=seller, title=title, description=description, price=price, image=image)
+            Design.objects.create(seller=seller, title=title, description=description, price=price, image=image, product_type=product_type, status='pending')
             return redirect('/manage_design/')
         return render(request, 'seller/add_design.html', {'msg': msg})
     return redirect('/login/')
@@ -222,11 +266,10 @@ def browse_designs(request):
         search = request.GET.get('search')
         if search:
             designs = Design.objects.filter(
-                Q(title__icontains=search) | 
-                Q(seller__name__icontains=search)
+                (Q(title__icontains=search) | Q(seller__name__icontains=search)) & Q(status='approve')
             )
         else:
-            designs = Design.objects.all()
+            designs = Design.objects.filter(status='approve')
         return render(request, 'user/browse_designs.html', {'designs': designs})
     return redirect('/login/')
 
@@ -266,7 +309,9 @@ def user_make_payment(request):
         if request.method == 'POST':
             booking.payment_status = 'paid'
             booking.save()
-            Payment.objects.create(booking=booking, user=booking.user, amount=booking.design.price)
+            amount = float(booking.design.price)
+            commission = amount * 0.10
+            Payment.objects.create(booking=booking, user=booking.user, amount=amount, admin_commission=commission)
             return redirect('/my_orders/')
         return render(request, 'user/payment.html', {'booking': booking})
     return redirect('/login/')
