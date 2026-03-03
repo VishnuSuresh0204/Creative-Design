@@ -231,7 +231,38 @@ def seller_view_bookings(request):
     if 'sid' in request.session:
         seller = Seller.objects.get(id=request.session['sid'])
         bookings = Booking.objects.filter(design__seller=seller).order_by('-date')
-        return render(request, 'seller/view_bookings.html', {'bookings': bookings})
+        
+        # Dashboard Statistics
+        total_bookings = bookings.count()
+        pending_approvals = bookings.filter(status='ordered').count()
+        
+        # Calculate Revenue (from paid and delivered/shipped/approved bookings)
+        total_revenue = 0
+        paid_bookings = bookings.filter(payment_status='paid')
+        for b in paid_bookings:
+            total_revenue += b.design.price * b.quantity
+            
+        context = {
+            'bookings': bookings,
+            'total_bookings': total_bookings,
+            'pending_approvals': pending_approvals,
+            'total_revenue': total_revenue
+        }
+        return render(request, 'seller/view_bookings.html', context)
+    return redirect('/login/')
+
+def seller_order_details(request):
+    if 'sid' in request.session:
+        id = request.GET.get('id')
+        seller = Seller.objects.get(id=request.session['sid'])
+        try:
+            booking = Booking.objects.get(id=id, design__seller=seller)
+            colors = []
+            if booking.custom_color:
+                colors = booking.custom_color.split()
+            return render(request, 'seller/order_details.html', {'booking': booking, 'colors': colors})
+        except:
+            return redirect('/seller_view_bookings/')
     return redirect('/login/')
 
 def manage_booking_status(request):
@@ -241,7 +272,10 @@ def manage_booking_status(request):
         try:
             booking = Booking.objects.get(id=id)
             if action == 'approve':
-                booking.status = 'approved'
+                date = request.POST.get('completion_date')
+                if date:
+                    booking.status = 'approved'
+                    booking.estimated_completion_date = date
             elif action == 'reject':
                 booking.status = 'rejected'
             elif action == 'ship':
@@ -251,7 +285,7 @@ def manage_booking_status(request):
             booking.save()
         except:
             pass
-        return redirect('/seller_view_bookings/')
+        return redirect(f'/seller_order_details/?id={id}')
     return redirect('/login/')
 
 # --- USER VIEWS ---
@@ -279,7 +313,10 @@ def design_details(request):
         design = Design.objects.get(id=id)
         if request.method == 'POST':
             text = request.POST.get('text')
-            color = request.POST.get('color')
+            colors = request.POST.getlist('color')
+            color_str = " ".join(colors) if colors else ""
+            quantity = request.POST.get('quantity', 1)
+            idea_desc = request.POST.get('description')
             image = request.FILES.get('image')
             user = User.objects.get(id=request.session['uid'])
             
@@ -287,8 +324,10 @@ def design_details(request):
                 user=user, 
                 design=design, 
                 custom_text=text, 
-                custom_color=color, 
-                custom_image=image
+                custom_color=color_str, 
+                custom_description=idea_desc,
+                custom_image=image,
+                quantity=quantity
             )
             return redirect('/my_orders/')
             
@@ -299,6 +338,11 @@ def my_orders(request):
     if 'uid' in request.session:
         user = User.objects.get(id=request.session['uid'])
         bookings = Booking.objects.filter(user=user).order_by('-date')
+        
+        # Calculate total price for each booking in the view for display convenience
+        for b in bookings:
+            b.total_price = b.design.price * b.quantity
+            
         return render(request, 'user/my_orders.html', {'bookings': bookings})
     return redirect('/login/')
 
@@ -306,14 +350,57 @@ def user_make_payment(request):
     if 'uid' in request.session:
         id = request.GET.get('id')
         booking = Booking.objects.get(id=id)
+        
+        # Security check: Only allow payment if approved
+        if booking.status != 'approved':
+            return redirect('/my_orders/')
+            
+        total_price = booking.design.price * booking.quantity
+        
         if request.method == 'POST':
             booking.payment_status = 'paid'
             booking.save()
-            amount = float(booking.design.price)
+            amount = float(total_price)
             commission = amount * 0.10
             Payment.objects.create(booking=booking, user=booking.user, amount=amount, admin_commission=commission)
             return redirect('/my_orders/')
-        return render(request, 'user/payment.html', {'booking': booking})
+        return render(request, 'user/payment.html', {'booking': booking, 'total_price': total_price})
+    return redirect('/login/')
+
+def cancel_booking(request):
+    if 'uid' in request.session:
+        id = request.GET.get('id')
+        try:
+            booking = Booking.objects.get(id=id, user_id=request.session['uid'])
+            # Can only cancel if not paid
+            if booking.payment_status == 'pending':
+                booking.delete()
+        except:
+            pass
+        return redirect('/my_orders/')
+    return redirect('/login/')
+
+def edit_booking(request):
+    if 'uid' in request.session:
+        id = request.GET.get('id')
+        booking = Booking.objects.get(id=id, user_id=request.session['uid'])
+        
+        # Can only edit if not yet approved
+        if booking.status != 'ordered':
+            return redirect('/my_orders/')
+            
+        if request.method == 'POST':
+            booking.custom_text = request.POST.get('text')
+            colors = request.POST.getlist('color')
+            booking.custom_color = ",".join(colors) if colors else ""
+            booking.quantity = request.POST.get('quantity', 1)
+            booking.custom_description = request.POST.get('description')
+            if request.FILES.get('image'):
+                booking.custom_image = request.FILES.get('image')
+            booking.save()
+            return redirect('/my_orders/')
+            
+        return render(request, 'user/edit_booking.html', {'booking': booking})
     return redirect('/login/')
 
 # --- FEEDBACK & CHAT ---
@@ -350,18 +437,67 @@ def admin_view_feedbacks(request):
 
 def chat_view(request):
     if request.user.is_authenticated:
-        receiver_id = request.GET.get('id')
-        receiver = Login.objects.get(id=receiver_id)
+        booking_id = request.GET.get('booking_id')
+        if not booking_id:
+            return redirect('/my_orders/' if request.user.user_type == 'user' else '/seller_view_bookings/')
+            
+        booking = Booking.objects.get(id=booking_id)
         
+        # Determine receiver
+        if request.user.user_type == 'user':
+            receiver = booking.design.seller.login
+        else:
+            receiver = booking.user.login
+            
         if request.method == 'POST':
             msg = request.POST.get('message')
-            Chat.objects.create(sender=request.user, receiver=receiver, message=msg)
-            return redirect(f'/chat/?id={receiver_id}')
+            Chat.objects.create(sender=request.user, receiver=receiver, booking=booking, message=msg)
+            return redirect(f'/chat/?booking_id={booking_id}')
             
-        chats = Chat.objects.filter(
-            (Q(sender=request.user) & Q(receiver=receiver)) |
-            (Q(sender=receiver) & Q(receiver=request.user))
-        ).order_by('date')
+        chats = Chat.objects.filter(booking=booking).order_by('date')
         
-        return render(request, 'chat.html', {'chats': chats, 'receiver': receiver})
+        return render(request, 'chat.html', {'chats': chats, 'receiver': receiver, 'booking': booking})
+    return redirect('/login/')
+
+def my_chats(request):
+    if request.user.is_authenticated:
+        # Get unique bookings the user has chatted about
+        chat_bookings = Chat.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).values_list('booking_id', flat=True).distinct()
+        bookings = Booking.objects.filter(id__in=chat_bookings).order_by('-date')
+        
+        interacted_chats = []
+        for b in bookings:
+            last_msg = Chat.objects.filter(booking=b).order_by('-date').first()
+            other_user = b.design.seller.login if request.user.user_type == 'user' else b.user.login
+            
+            profile_img = None
+            try:
+                if other_user.user_type == 'seller':
+                    profile_img = Seller.objects.get(login=other_user).image
+                elif other_user.user_type == 'user':
+                    profile_img = User.objects.get(login=other_user).image
+            except:
+                pass
+
+            interacted_chats.append({
+                'booking': b,
+                'user': other_user,
+                'last_message': last_msg.message if last_msg else "",
+                'date': last_msg.date if last_msg else b.date,
+                'image': profile_img
+            })
+                
+        return render(request, 'my_chats.html', {'interacted_users': interacted_chats})
+    return redirect('/login/')
+
+def contact_admin(request):
+    if 'uid' in request.session:
+        admin_user = Login.objects.filter(user_type='admin').first()
+        if admin_user:
+            # We might need a special system-level booking or a different logic for admin-user chat
+            # For now, keeping it restricted as per requested 'no seller-admin msg'
+            # Note: The chat_view was updated to be order-based. 
+            # If the user wants admin-user chat, we'd need a special handling.
+            # However, the user specifically asked for "no message between admin and seller".
+            return redirect('/my_chats/') 
     return redirect('/login/')

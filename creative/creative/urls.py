@@ -46,6 +46,7 @@ urlpatterns = [
     path('edit_design/', views.edit_design, name='edit_design'),
     path('delete_design/', views.delete_design, name='delete_design'),
     path('seller_view_bookings/', views.seller_view_bookings, name='seller_view_bookings'),
+    path('seller_order_details/', views.seller_order_details, name='seller_order_details'),
     path('manage_booking_status/', views.manage_booking_status, name='manage_booking_status'),
     
     # User
@@ -54,12 +55,16 @@ urlpatterns = [
     path('design_details/', views.design_details, name='design_details'),
     path('my_orders/', views.my_orders, name='my_orders'),
     path('user_make_payment/', views.user_make_payment, name='user_make_payment'),
+    path('edit_booking/', views.edit_booking, name='edit_booking'),
+    path('cancel_booking/', views.cancel_booking, name='cancel_booking'),
     
     # Feedback & Chat
     path('user_feedback/', views.user_feedback, name='user_feedback'),
     path('seller_view_feedbacks/', views.seller_view_feedbacks, name='seller_view_feedbacks'),
     path('admin_view_feedbacks/', views.admin_view_feedbacks, name='admin_view_feedbacks'),
     path('chat/', views.chat_view, name='chat'),
+    path('my_chats/', views.my_chats, name='my_chats'),
+    path('contact_admin/', views.contact_admin, name='contact_admin'),
 ]
 
 if settings.DEBUG:
