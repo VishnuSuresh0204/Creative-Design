@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ booking.id }} Management - Seller{% endblock %}
+
+{% block content %}
+<div class="animate-fade container-fluid px-lg-5">
+    <!-- Breadcrumb & Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'seller_home' %}" class="text-info-emphasis text-decoration-none fw-bold">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'seller_view_bookings' %}" class="text-info-emphasis text-decoration-none fw-bold">Orders</a></li>
+                    <li class="breadcrumb-item active text-white fw-bold" aria-current="page">#{{ booking.id }}</li>
+                </ol>
+            </nav>
+            <h2 class="mb-0 fw-bold">Manage Order #{{ booking.id }}</h2>
+        </div>
+        <a href="{% url 'seller_view_bookings' %}" class="btn btn-outline-light rounded-pill px-4 border-opacity-10">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+
+    <div class="row g-5">
+        <!-- Left Column: Details & Customizations -->
+        <div class="col-lg-8">
+            <!-- Product Summary Card -->
+            <div class="glass-card p-4 mb-4 border border-white border-opacity-10 shadow-lg">
+                <div class="d-flex align-items-start gap-4">
+                    {% if booking.design.image %}
+                    <img src="{{ booking.design.image.url }}" class="rounded-4 shadow-2xl border border-white border-opacity-10" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% endif %}
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3 class="text-white fw-bold mb-0">{{ booking.design.title }}</h3>
+                            <span class="badge bg-primary bg-opacity-20 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill shadow-sm">
+                                Premium Request
+                            </span>
+                        </div>
+                        <p class="text-white opacity-75 mb-4">{{ booking.design.description|truncatewords:30 }}</p>
+                        <div class="row g-3">
+                            <div class="col-auto">
+                                <div class="px-3 py-2 rounded-4 bg-black bg-opacity-40 border border-white border-opacity-10">
+                                    <label class="text-primary-accent x-small d-block fw-bold" style="color: var(--primary-accent) !important;">Unit Price</label>
+                                    <span class="text-white fw-bold">₹{{ booking.design.price }}</span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="px-3 py-2 rounded-4 bg-black bg-opacity-40 border border-white border-opacity-10">
+                                    <label class="text-primary-accent x-small d-block fw-bold" style="color: var(--primary-accent) !important;">Quantity</label>
+                                    <span class="text-white fw-bold">{{ booking.quantity|default:1 }} Units</span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="px-3 py-2 rounded-4 bg-success bg-opacity-20 border border-success border-opacity-20">
+                                    <label class="text-success x-small d-block fw-bold">Total Revenue</label>
+                                    <span class="text-success fw-bold">₹{{ booking.total_price }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customization Table -->
+            <div class="glass-card overflow-hidden mb-4 border border-white border-opacity-10 shadow-lg">
+                <div class="bg-white bg-opacity-5 p-3 px-4 border-bottom border-white border-opacity-5">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-wand-magic-sparkles me-2 text-warning"></i>Customization Requests</h5>
+                </div>
+                <div class="p-4">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-borderless align-middle mb-0">
+                            <tbody>
+                                <tr class="border-bottom border-white border-opacity-5">
+                                    <td class="py-4 small fw-bold" style="width: 30%; color: var(--primary-accent) !important;">
+                                        <i class="fas fa-font me-3 text-info"></i>Personalized Text
+                                    </td>
+                                    <td class="py-4 text-white fs-5 fw-bold">
+                                        {{ booking.custom_text|default:"<span class='text-white-50 fw-normal italic'>No custom text requested</span>"|safe }}
+                                    </td>
+                                </tr>
+                                <tr class="border-bottom border-white border-opacity-5">
+                                    <td class="py-4 small fw-bold" style="color: var(--primary-accent) !important;">
+                                        <i class="fas fa-lightbulb me-3 text-warning"></i>Customer's Vision
+                                    </td>
+                                    <td class="py-4 text-white">
+                                        <div class="p-3 rounded-4 bg-black bg-opacity-30 border border-white border-opacity-10">
+                                            {{ booking.custom_description|default:"<span class='text-white-25 italic'>No special instructions provided</span>"|safe }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="border-bottom border-white border-opacity-5">
+                                    <td class="py-4 small fw-bold" style="color: var(--primary-accent) !important;">
+                                        <i class="fas fa-palette me-3 text-primary"></i>Color Palette
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="d-flex flex-wrap gap-3">
+                                            {% if colors %}
+                                                {% for color in colors %}
+                                                    <div class="rounded-circle border border-white border-opacity-50 shadow-lg" 
+                                                         style="width: 45px; height: 45px; background-color: {{ color }}; display: inline-block;" 
+                                                         title="{{ color }}"></div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-white-50 small italic opacity-50">Standard Palette Only</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% if booking.custom_image %}
+                                <tr>
+                                    <td colspan="2" class="pt-5">
+                                        <label class="text-muted small d-block mb-4 fw-bold text-uppercase letter-spacing-1">
+                                            <i class="fas fa-paperclip me-2 text-success"></i>Reference Attachment
+                                        </label>
+                                        <div class="position-relative rounded-5 overflow-hidden border border-white border-opacity-10 bg-black bg-opacity-60 shadow-2xl group">
+                                            <img src="{{ booking.custom_image.url }}" class="img-fluid w-100 transition-base" style="max-height: 500px; object-fit: contain;">
+                                            <div class="position-absolute inset-0 bg-black bg-opacity-40 d-flex align-items-center justify-content-center opacity-0 group-hover-opacity-100 transition-base">
+                                                <a href="{{ booking.custom_image.url }}" target="_blank" class="btn btn-light rounded-pill px-4 shadow-lg">
+                                                    <i class="fas fa-search-plus me-2"></i>View Full Resolution
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Management Panel -->
+        <div class="col-lg-4">
+            <!-- Customer Profile -->
+            <div class="glass-card p-4 mb-4 border border-white border-opacity-10 shadow-lg">
+                <h5 class="mb-4 fw-bold text-white"><i class="fas fa-user-circle me-2 text-info"></i>Customer Profile</h5>
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-info bg-opacity-15 p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; border: 1px solid rgba(0, 210, 255, 0.2);">
+                        <i class="fas fa-user-tie fs-3 text-info"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-0 fw-bold">{{ booking.user.name }}</h5>
+                        <p class="text-white opacity-75 mb-0 small">{{ booking.user.phone }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'chat' %}?booking_id={{ booking.id }}" class="btn btn-info w-100 p-3 text-white shadow-lg rounded-pill fw-bold transition-base hover-scale">
+                    <i class="fas fa-comments me-2"></i>Contact via Chat
+                </a>
+            </div>
+
+            <!-- Management Form Card -->
+            <div class="glass-card overflow-hidden border border-white border-opacity-10 shadow-2xl">
+                <div class="bg-white bg-opacity-5 p-3 px-4 border-bottom border-white border-opacity-5 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Order Management</h5>
+                    <span class="badge bg-{% if booking.status == 'ordered' %}warning{% elif booking.status == 'delivered' %}success{% else %}info{% endif %} bg-opacity-15 text-{% if booking.status == 'ordered' %}warning{% elif booking.status == 'delivered' %}success{% else %}info{% endif %} border border-opacity-25 px-2 py-1 rounded-pill x-small">
+                        {{ booking.status|title }}
+                    </span>
+                </div>
+                
+                <div class="p-4">
+                    <!-- Date Panel -->
+                    <div class="mb-4 p-3 rounded-4 bg-black bg-opacity-40 border border-white border-opacity-10">
+                        <label class="x-small d-block mb-2 fw-bold" style="color: var(--primary-accent) !important;">Completion Timeline</label>
+                        {% if booking.estimated_completion_date %}
+                            <div class="d-flex align-items-center text-info fs-5 fw-bold">
+                                <i class="fas fa-calendar-check me-2"></i>
+                                {{ booking.estimated_completion_date|date:"F d, Y" }}
+                            </div>
+                        {% else %}
+                            <p class="text-white-50 mb-0 italic small">Not yet scheduled</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Payment Status -->
+                    <div class="mb-4">
+                        <label class="x-small d-block mb-2 fw-bold" style="color: var(--primary-accent) !important;">Payment Verification</label>
+                        <div class="p-3 rounded-4 bg-black bg-opacity-40 border border-white border-opacity-10 d-flex align-items-center justify-content-between">
+                            <span class="text-{% if booking.payment_status == 'paid' %}success{% else %}warning{% endif %} fw-bold fs-5">
+                                <i class="fas fa-{% if booking.payment_status == 'paid' %}check-circle{% else %}clock{% endif %} me-2"></i>
+                                {{ booking.payment_status|upper }}
+                            </span>
+                            {% if booking.payment_status == 'paid' %}
+                                <i class="fas fa-shield-alt text-success fs-4"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr class="border-white border-opacity-10 my-4">
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-3">
+                        {% if booking.status == 'ordered' %}
+                        <form action="{% url 'manage_booking_status' %}?id={{ booking.id }}&action=approve" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="small mb-2 fw-bold" style="color: var(--primary-accent) !important;">Set Expected Completion Date</label>
+                                <input type="date" name="completion_date" class="form-control bg-black bg-opacity-40 border-white border-opacity-20 text-white p-3 rounded-4 mb-3" required min="{% now 'Y-m-d' %}" value="{{ booking.estimated_completion_date|date:'Y-m-d' }}">
+                                <button type="submit" class="btn btn-success w-100 p-3 rounded-pill shadow-lg fw-bold transition-base hover-scale">
+                                    <i class="fas fa-check-double me-2"></i>Approve & Confirm
+                                </button>
+                            </div>
+                        </form>
+                        <a href="{% url 'manage_booking_status' %}?id={{ booking.id }}&action=reject" class="btn btn-outline-danger w-100 p-2 rounded-pill border-opacity-25 x-small text-decoration-none text-center">
+                            <i class="fas fa-times me-2"></i>Reject Order
+                        </a>
+
+                        {% elif booking.status == 'approved' %}
+                            {% if booking.payment_status == 'paid' %}
+                            <a href="{% url 'manage_booking_status' %}?id={{ booking.id }}&action=ship" class="btn btn-info w-100 p-3 text-white shadow-lg rounded-pill fw-bold transition-base hover-scale">
+                                <i class="fas fa-truck-moving me-2"></i>Mark as Shipped
+                            </a>
+                            {% else %}
+                            <div class="alert alert-warning bg-opacity-10 border-warning border-opacity-25 text-warning rounded-4 mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Waiting for customer to complete payment before shipping.
+                            </div>
+                            {% endif %}
+
+                        {% elif booking.status == 'shipped' %}
+                        <a href="{% url 'manage_booking_status' %}?id={{ booking.id }}&action=deliver" class="btn btn-success w-100 p-3 shadow-lg rounded-pill fw-bold transition-base hover-scale">
+                            <i class="fas fa-house-chimney-check me-2"></i>Mark as Delivered
+                        </a>
+
+                        {% else %}
+                        <div class="text-center py-4 bg-white bg-opacity-5 rounded-4 border border-white border-opacity-5">
+                            <i class="fas fa-circle-check text-success fs-1 mb-3 opacity-50"></i>
+                            <h5 class="text-white mb-1">Process Complete</h5>
+                            <p class="text-muted small mb-0">Order is fully fulfilled</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(10, 15, 25, 0.95) !important;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 2rem;
+    }
+    .x-small {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: var(--primary-accent) !important;
+        opacity: 0.9;
+    }
+    .shadow-2xl {
+        box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.02);
+    }
+    .shadow-inner {
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .transition-base {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hover-scale:hover {
+        transform: translateY(-5px) scale(1.01);
+    }
+    .group:hover img {
+        transform: scale(1.05);
+    }
+    .group-hover-opacity-100:hover {
+        opacity: 1 !important;
+    }
+    .letter-spacing-1 {
+        letter-spacing: 1px;
+    }
+    .btn-xs { padding: 0.2rem 0.6rem; font-size: 0.7rem; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.2); }
+</style>
+{% endblock %}
