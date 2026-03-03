@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Booking - Creative Design{% endblock %}
+
+{% block content %}
+<div class="animate-fade py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-card p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-1">Edit Customization</h2>
+                        <p class="text-muted">Update your requirements for <span class="text-info">{{ booking.design.title }}</span></p>
+                    </div>
+                    <a href="/my_orders/" class="btn btn-outline btn-sm">Cancel</a>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="row g-4">
+                    {% csrf_token %}
+                    
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Quantity</label>
+                        <div class="input-group input-group-lg">
+                            <button class="btn btn-outline border-secondary text-white px-3" type="button" onclick="updateQty(-1)">-</button>
+                            <input type="number" name="quantity" id="qtyInput" class="form-control bg-transparent border-secondary text-white text-center" value="{{ booking.quantity }}" min="1">
+                            <button class="btn btn-outline border-secondary text-white px-3" type="button" onclick="updateQty(1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Custom Text</label>
+                        <input type="text" name="text" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" value="{{ booking.custom_text }}" placeholder="Add your text here...">
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label text-muted">Your Design Ideas / Instructions</label>
+                        <textarea name="description" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" rows="4" placeholder="Describe your ideas or specific requirements...">{{ booking.custom_description }}</textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label text-muted">Theme Colors</label>
+                        <div id="colorContainer" class="d-flex flex-wrap gap-3 mb-3">
+                            {% with colors=booking.custom_color|default:"" %}
+                                {% for color in colors.split %}
+                                <div class="color-picker-wrapper d-flex flex-column align-items-center gap-2">
+                                    <input type="color" name="color" class="form-control form-control-color border-0 p-0 rounded-circle" value="{{ color|cut:',' }}" style="width: 50px; height: 50px;">
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeColor(this)">Remove</button>
+                                </div>
+                                {% empty %}
+                                <div class="color-picker-wrapper d-flex flex-column align-items-center gap-2">
+                                    <input type="color" name="color" class="form-control form-control-color border-0 p-0 rounded-circle" value="#00d2ff" style="width: 50px; height: 50px;">
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeColor(this)">Remove</button>
+                                </div>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline text-info" onclick="addColor()">
+                            <i class="fas fa-plus me-2"></i>Add Another Color
+                        </button>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label text-muted">Custom Image/Logo (Current: {% if booking.custom_image %}{{ booking.custom_image.name }}{% else %}None{% endif %})</label>
+                        <input type="file" name="image" class="form-control bg-transparent border-secondary text-white p-3 rounded-4">
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary w-100 p-3 rounded-pill fs-5 fw-bold shadow-lg">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateQty(change) {
+        const input = document.getElementById('qtyInput');
+        let val = parseInt(input.value) + change;
+        if (val < 1) val = 1;
+        input.value = val;
+    }
+
+    function addColor() {
+        const container = document.getElementById('colorContainer');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'color-picker-wrapper d-flex flex-column align-items-center gap-2';
+        wrapper.innerHTML = `
+            <input type="color" name="color" class="form-control form-control-color border-0 p-0 rounded-circle" value="#00d2ff" style="width: 50px; height: 50px;">
+            <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeColor(this)">Remove</button>
+        `;
+        container.appendChild(wrapper);
+    }
+
+    function removeColor(btn) {
+        const container = document.getElementById('colorContainer');
+        if (container.children.length > 1) {
+            btn.parentElement.remove();
+        }
+    }
+</script>
+{% endblock %}

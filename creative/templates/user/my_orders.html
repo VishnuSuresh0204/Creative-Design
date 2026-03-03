@@ -44,40 +44,16 @@
                             <button class="btn btn-sm btn-link text-info text-decoration-none" data-bs-toggle="modal" data-bs-target="#customModal{{ booking.id }}">
                                 View Details
                             </button>
-                            
-                            <!-- Modal -->
-                            <div class="modal fade" id="customModal{{ booking.id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content glass-card border-0">
-                                        <div class="modal-header border-0">
-                                            <h5 class="modal-title">Customization Details</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body p-4">
-                                            <div class="mb-3">
-                                                <label class="text-muted small d-block">Custom Text</label>
-                                                <p class="fs-5">{{ booking.custom_text|default:"N/A" }}</p>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="text-muted small d-block">Theme Color</label>
-                                                <div class="rounded-3" style="width: 40px; height: 40px; background-color: {{ booking.custom_color|default:'#00d2ff' }};"></div>
-                                            </div>
-                                            {% if booking.custom_image %}
-                                            <div class="mb-3">
-                                                <label class="text-muted small d-block">Custom Logo/Image</label>
-                                                <img src="{{ booking.custom_image.url }}" class="img-fluid rounded-3 mt-2" style="max-height: 200px;">
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </td>
                         <td>
                             {% if booking.payment_status == 'paid' %}
-                            <span class="text-success"><i class="fas fa-check-circle me-1"></i>Paid</span>
+                                <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Paid</span>
+                            {% elif booking.status == 'approved' %}
+                                <a href="/user_make_payment/?id={{ booking.id }}" class="btn btn-sm btn-primary shadow-sm px-3">Pay Now</a>
+                            {% elif booking.status == 'rejected' %}
+                                <span class="text-danger small">Order Rejected</span>
                             {% else %}
-                            <a href="/user_make_payment/?id={{ booking.id }}" class="btn btn-sm btn-primary">Pay Now</a>
+                                <span class="text-muted small">Awaiting Approval</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -93,4 +69,81 @@
         </div>
     </div>
 </div>
+
+{% for booking in bookings %}
+<div class="modal fade" id="customModal{{ booking.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Customization Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3 d-flex justify-content-between">
+                    <div>
+                        <label class="text-muted small d-block">Quantity</label>
+                        <p class="fs-5 mb-0">{{ booking.quantity }}</p>
+                    </div>
+                    <div class="text-end">
+                        <label class="text-muted small d-block">Total Price</label>
+                        <p class="fs-5 mb-0 text-info">₹{{ booking.total_price }}</p>
+                    </div>
+                </div>
+
+                {% if booking.estimated_completion_date %}
+                <div class="mb-3 p-3 rounded-4 bg-info bg-opacity-10 border border-info border-opacity-25">
+                    <label class="text-info small d-block mb-1"><i class="fas fa-calendar-check me-2"></i>Estimated Completion</label>
+                    <p class="fs-5 mb-0 fw-bold">{{ booking.estimated_completion_date|date:"M d, Y" }}</p>
+                </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="text-muted small d-block">Custom Text</label>
+                    <p class="fs-5">{{ booking.custom_text|default:"N/A" }}</p>
+                </div>
+                {% if booking.custom_description %}
+                <div class="mb-3">
+                    <label class="text-muted small d-block">Design Ideas</label>
+                    <p class="text-white-50">{{ booking.custom_description }}</p>
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-2">Theme Colors</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% with colors=booking.custom_color|default:"" %}
+                            {% if colors %}
+                                {% for color in colors.split %}
+                                    <div class="rounded-pill border border-white border-opacity-25" style="width: 35px; height: 35px; background-color: {{ color|cut:',' }};" title="{{ color|cut:',' }}"></div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="rounded-pill border border-white border-opacity-25" style="width: 35px; height: 35px; background-color: #00d2ff;"></div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                {% if booking.custom_image %}
+                <div class="mb-3">
+                    <label class="text-muted small d-block">Custom Logo/Image</label>
+                    <img src="{{ booking.custom_image.url }}" class="img-fluid rounded-3 mt-2" style="max-height: 200px;">
+                </div>
+                {% endif %}
+
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 d-flex gap-2">
+                    {% if booking.status == 'ordered' %}
+                        <a href="/edit_booking/?id={{ booking.id }}" class="btn btn-outline btn-sm flex-fill">Edit Order</a>
+                    {% endif %}
+                    
+                    {% if booking.payment_status == 'pending' %}
+                        <a href="/cancel_booking/?id={{ booking.id }}" class="btn btn-outline-danger btn-sm flex-fill" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel Order</a>
+                    {% endif %}
+
+                    <a href="/chat/?booking_id={{ booking.id }}" class="btn btn-info btn-sm flex-fill text-white shadow-sm">
+                        <i class="fas fa-comments me-2"></i>Chat regarding Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}

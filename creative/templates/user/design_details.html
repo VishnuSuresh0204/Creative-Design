@@ -36,29 +36,79 @@
 
         <div class="col-lg-5">
             <div class="glass-card p-4 sticky-top" style="top: 100px;">
-                <h3 class="mb-4">Customize & Order</h3>
                 <div class="mb-4 d-flex justify-content-between">
-                    <span class="text-muted">Base Price</span>
-                    <span class="fs-4 fw-bold text-info">${{ design.price }}</span>
+                    <span class="text-muted">Price per unit</span>
+                    <span class="fs-4 fw-bold text-info">₹<span id="basePrice">{{ design.price }}</span></span>
                 </div>
 
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data" id="orderForm">
                     {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label text-muted">Quantity</label>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-outline-secondary" onclick="updateQty(-1)">-</button>
+                            <input type="number" name="quantity" id="quantity" class="form-control bg-transparent border-secondary text-white text-center" value="1" min="1" readonly>
+                            <button type="button" class="btn btn-outline-secondary" onclick="updateQty(1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4 d-flex justify-content-between">
+                        <span class="text-muted">Total Price</span>
+                        <span class="fs-3 fw-bold text-primary">₹<span id="totalPrice">{{ design.price }}</span></span>
+                    </div>
+
                     <div class="mb-4">
                         <label class="form-label text-muted">Custom Text</label>
                         <input type="text" name="text" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" placeholder="Add your text here...">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted">Your Design Ideas / Instructions</label>
+                        <textarea name="description" class="form-control bg-transparent border-secondary text-white p-3 rounded-4" rows="4" placeholder="Describe your ideas or specific requirements..."></textarea>
                     </div>
                     <div class="mb-4">
                         <label class="form-label text-muted">Custom Image/Logo (Optional)</label>
                         <input type="file" name="image" class="form-control bg-transparent border-secondary text-white p-3 rounded-4">
                     </div>
                     <div class="mb-4">
-                        <label class="form-label text-muted">Preferred Theme Color</label>
-                        <div class="d-flex gap-3 align-items-center">
-                            <input type="color" name="color" class="form-control form-control-color border-0 bg-transparent" value="#00d2ff" style="width: 60px; height: 60px;">
-                            <span class="text-muted small">Select a color highlight</span>
+                        <label class="form-label text-muted">Preferred Theme Colors</label>
+                        <div id="colorContainer" class="d-flex flex-wrap gap-3 align-items-center mb-3">
+                            <div class="d-flex gap-2 align-items-center color-item">
+                                <input type="color" name="color" class="form-control form-control-color border-0 bg-transparent" value="#00d2ff" style="width: 50px; height: 50px;">
+                                <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle remove-color" style="display: none;"><i class="fas fa-times"></i></button>
+                            </div>
                         </div>
+                        <button type="button" id="addColor" class="btn btn-sm btn-outline-info rounded-pill"><i class="fas fa-plus me-1"></i>Add Another Color</button>
                     </div>
+
+                    <script>
+                        document.getElementById('addColor').addEventListener('click', function() {
+                            const container = document.getElementById('colorContainer');
+                            const newItem = document.createElement('div');
+                            newItem.className = 'd-flex gap-2 align-items-center color-item animate-fade';
+                            newItem.innerHTML = `
+                                <input type="color" name="color" class="form-control form-control-color border-0 bg-transparent" value="#00d2ff" style="width: 50px; height: 50px;">
+                                <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle remove-color"><i class="fas fa-times"></i></button>
+                            `;
+                            container.appendChild(newItem);
+                            
+                            // Show all remove buttons if more than 1
+                            if (container.children.length > 1) {
+                                document.querySelectorAll('.remove-color').forEach(btn => btn.style.display = 'block');
+                            }
+                        });
+
+                        document.getElementById('colorContainer').addEventListener('click', function(e) {
+                            if (e.target.closest('.remove-color')) {
+                                e.target.closest('.color-item').remove();
+                                const container = document.getElementById('colorContainer');
+                                // Hide remove button if only 1 remains
+                                if (container.children.length === 1) {
+                                    document.querySelector('.remove-color').style.display = 'none';
+                                }
+                            }
+                        });
+                    </script>
 
                     <button type="submit" class="btn btn-primary w-100 py-3 fs-5 mb-3">Place Order</button>
                     <a href="/chat/?id={{ design.seller.login.id }}" class="btn btn-outline w-100 py-2 mb-3"><i class="fas fa-comment-dots me-2"></i>Chat with Designer</a>
@@ -68,4 +118,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    function updateQty(delta) {
+        const qtyInput = document.getElementById('quantity');
+        let qty = parseInt(qtyInput.value) + delta;
+        if (qty < 1) qty = 1;
+        qtyInput.value = qty;
+        
+        const basePrice = parseFloat(document.getElementById('basePrice').innerText);
+        const total = (basePrice * qty).toFixed(2);
+        document.getElementById('totalPrice').innerText = total;
+    }
+</script>
 {% endblock %}
