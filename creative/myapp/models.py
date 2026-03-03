@@ -58,7 +58,14 @@ class Booking(models.Model):
     # Customization selections
     custom_text = models.CharField(max_length=255, null=True, blank=True)
     custom_image = models.ImageField(upload_to='custom_images/', null=True, blank=True)
-    custom_color = models.CharField(max_length=50, null=True, blank=True)
+    custom_color = models.CharField(max_length=255, null=True, blank=True)
+    custom_description = models.TextField(null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1)
+    estimated_completion_date = models.DateField(null=True, blank=True)
+
+    @property
+    def total_price(self):
+        return self.design.price * self.quantity
 
     def __str__(self):
         return f"{self.user.name} - {self.design.title}"
@@ -79,6 +86,7 @@ class Feedback(models.Model):
     date = models.DateField(auto_now_add=True)
 
 class Chat(models.Model):
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, null=True, blank=True)
     sender = models.ForeignKey(Login, on_delete=models.CASCADE, related_name='sent_messages')
     receiver = models.ForeignKey(Login, on_delete=models.CASCADE, related_name='received_messages')
     message = models.TextField()
